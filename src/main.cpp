@@ -53,13 +53,12 @@ public:
 		mBlockVector.clear();
 
 		size_t threshold = count;
-		system( "cls" );
 		for( auto i = 0; i < threshold; ++i )
 		{
 			int w = uniform_dist( el );
 			int h = uniform_dist( el );
 			auto block = Block( w, h, NodeColor( uniform_dist( el ), uniform_dist( el ), uniform_dist( el ), 255 ) );
-			std::cout << w << "x" << h << std::endl;
+			//std::cout << w << "x" << h << std::endl;
 			mBlockVector.emplace_back( block );
 		}
 	}
@@ -140,23 +139,27 @@ public:
 		//mCanvas->setBackgroundColor( { 73, 73, 73, 125 } );
 		mCanvas->setSize( { 1024, 768 } );
 
-		Window *window = new Window( this, "Sort Algorithm" );
-		window->setPosition( Vector2i( 720, 0 ) );
-		window->setLayout( new GroupLayout() );
+		FormHelper* gui = new FormHelper( this );
 
-		Widget *tools = new Widget( window );
-		tools->setLayout( new BoxLayout( Orientation::Vertical,
-						  Alignment::Middle, 0, 5 ) );
+		ref<Window> window = gui->addWindow( Eigen::Vector2i( 720, 0 ), "Control Algorithm" );
+	
+		enum AlgorithmEnum
+		{
+			maxside,
+			area,
+			width,
+			height
+		};
 
-		auto ib = tools->add<IntBox<int>>();
-		ib->setEditable( true );
-		ib->setFixedSize( Vector2i( 100, 35 ) );
+		gui->addGroup( "Generate" );
+		auto label = std::string( "Count" );
+		auto default = 20;
+		auto countLabel = gui->addVariable( label, default );
+		countLabel->setEditable( true );
 
-		Button *gerate = new Button( tools, "generate" );
-		gerate->setFixedSize( Vector2i( 100, 35 ) );
-		gerate->setCallback( [&, ib] {
-			auto count = ib->value() > 0 ? ib->value() : 20;
-			ib->setValue( count );
+		auto generate = gui->addButton( "Generate", [&, countLabel] {
+			auto count = countLabel->value() > 0 ? countLabel->value() : 20;
+			countLabel->setValue( count );
 			mCanvas->generateData( count );
 			switch( index )
 			{
@@ -177,10 +180,12 @@ public:
 			}
 		} );
 
-		ComboBox *cobo =
-			new ComboBox( tools, { "maxside", "area", "width", "height" } );
-		cobo->setFixedSize( Vector2i( 100, 35 ) );
-		cobo->setCallback( [&]( int id )
+		
+		AlgorithmEnum algorithm = maxside;
+		gui->addGroup( "Algorithm" );
+		auto algoEnum = gui->addVariable( "Sort", algorithm, true );
+		algoEnum->setItems( { "maxside", "area", "width", "height" } );
+		algoEnum->setCallback( [&]( int id )
 		{
 			index = 0;
 			switch( id )

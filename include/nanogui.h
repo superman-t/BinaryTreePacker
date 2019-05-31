@@ -22,6 +22,8 @@
 #include <nanogui/graph.h>
 #include <nanogui/tabwidget.h>
 #include <nanogui/glcanvas.h>
+#include <nanogui/formhelper.h>
+#include <nanogui/nanogui.h>
 
 #if defined(__GNUC__)
 #  pragma GCC diagnostic ignored "-Wmissing-field-initializers"
