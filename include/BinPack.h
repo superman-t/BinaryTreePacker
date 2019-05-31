@@ -1,15 +1,32 @@
 #pragma once
 
-#include "stdafx.h"
 #include <vector>
 #include <memory>
+#include <iostream>
+#include <algorithm>
+#include <map>
 
 typedef float ElementType;
 struct Node;
 typedef std::shared_ptr<Node> NodePtr;
+
+struct NodeColor
+{
+	int r;
+	int g;
+	int b;
+	int a;
+
+	NodeColor() : NodeColor( 0, 0, 0, 0 )
+	{};
+
+	NodeColor( int _r, int _g, int _b, int _a ) :r( _r ), g( _g ), b( _b ), a( _a )
+	{};
+};
+
 struct Block
 {
-	Block( ElementType _w, ElementType _h ) :w( _w ), h( _h ), fit(nullptr)
+	Block( ElementType _w, ElementType _h, NodeColor _color) :w( _w ), h( _h ), color(_color), fit(nullptr)
 	{};
 
 	~Block()
@@ -20,9 +37,98 @@ struct Block
 	ElementType w;
 	ElementType h;
 	NodePtr fit;
+	NodeColor color;
 };
 
 typedef std::vector<Block> BlockVector;
+
+struct BlockSort
+{
+private:
+	using  SortMetaFunc = ElementType(BlockSort::*)(const Block& lhs, const Block& rhs);
+	using  SortFunc = bool(BlockSort::*)(const Block& lhs, const Block& rhs);
+
+	ElementType random( const Block& lhs, const Block& rhs )
+	{
+		return rand() - 0.5f;
+	};
+	ElementType w( const Block& lhs, const Block& rhs )
+	{
+		return lhs.w - rhs.w;
+	};
+	ElementType h( const Block& lhs, const Block& rhs )
+	{
+		return lhs.h - rhs.h;
+	};
+	ElementType a( const Block& lhs, const Block& rhs )
+	{
+		return lhs.w*lhs.h - rhs.w*rhs.h;
+	};
+	ElementType max( const Block& lhs, const Block& rhs )
+	{
+		return std::max( lhs.w, lhs.h ) - std::max( rhs.w, rhs.h );
+	};
+	ElementType min( const Block& lhs, const Block& rhs )
+	{
+		return std::min( lhs.w, lhs.h ) - std::min( rhs.w, rhs.h );
+	};
+
+	std::map<std::string, SortMetaFunc> metaSortMap = {
+		{ "random", &BlockSort::random},
+		{ "w", &BlockSort::w},
+		{ "h", &BlockSort::h},
+		{ "a", &BlockSort::a},
+		{ "max", &BlockSort::max},
+		{ "min", &BlockSort::min}
+	};
+
+
+	bool width( const Block& lhs, const Block& rhs )
+	{
+		return msort( lhs, rhs, { "w", "h"} );
+	};
+
+	bool height ( const Block& lhs, const Block& rhs )
+	{
+		return msort( lhs, rhs, { "h", "w" } );
+	};
+
+	bool area ( const Block& lhs, const Block& rhs )
+	{
+		return msort( lhs, rhs, { "a", "h", "w" } );
+	};
+
+	bool maxside( const Block& lhs, const Block& rhs )
+	{
+		return msort( lhs, rhs, { "max", "min", "h", "w" } );
+	};
+	std::map<std::string, SortFunc> sortMap = {
+		{ "width", &BlockSort::width },
+		{ "height", &BlockSort::height },
+		{ "area", &BlockSort::area },
+		{ "maxside", &BlockSort::maxside },
+	};
+
+	bool msort( const Block& lhs, const Block& rhs, std::vector <std::string> criteria)
+	{
+		ElementType diff;
+		for( auto i = 0; i < criteria.size(); ++i )
+		{
+			SortMetaFunc func =  metaSortMap.at( criteria[i] );
+			diff = (this->*func)(lhs, rhs);
+			if( diff != 0 )
+			{
+				return diff > 0 ? true : false;
+			}
+		}
+		return false;
+	}
+public:
+	SortFunc SortComp( const std::string& sortName )
+	{
+		return sortMap.at( sortName );
+	};
+};
 
 struct Rect
 {
@@ -70,7 +176,6 @@ struct Node : public Rect
 	bool used;
 	NodePtr down;
 	NodePtr right;
-
 };
 
 /*(0,0)  _______________x
@@ -107,6 +212,8 @@ public:
 	{
 		return root;
 	};
+
+	void reset();
 
 private:
 	NodePtr root;

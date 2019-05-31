@@ -1,5 +1,5 @@
-#include "stdafx.h"
 #include "BinPack.h"
+#include <queue>
 
 Packer::Packer(ElementType w, ElementType h)
 {
@@ -114,3 +114,28 @@ NodePtr Packer::growRight( ElementType w, ElementType h )
 	else
 		return nullptr;
 }
+
+void Packer::reset()
+{
+	std::queue<NodePtr> que;
+	que.emplace( root );
+	while( !que.empty() )
+	{
+		auto node = que.front();
+		que.pop();
+
+		if( node->down ) que.emplace( node->down );
+		if( node->right ) que.emplace( node->right );
+		if ( node != root )
+			node = nullptr;
+	}
+
+	root->used = false;
+	root->x = 0;
+	root->y = 0;
+	root->w = 0;
+	root->h = 0;
+	root->down = nullptr;
+	root->right = nullptr;
+}
+
