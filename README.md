@@ -17,9 +17,9 @@ git submodule update --recursive
 mkdir build  
 cd build  
 
-# use cmake generate project and build  
+# use cmake generate project and build, can't run release because the nanogui crash with Release
 cmake ..  
-cmake --build . --config Release
+cmake --build . --config Debug
 ```
 # Steps of algorithm
 
