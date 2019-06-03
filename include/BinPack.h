@@ -6,216 +6,223 @@
 #include <algorithm>
 #include <map>
 
-typedef float ElementType;
-struct Node;
-typedef std::shared_ptr<Node> NodePtr;
+using std::max;
+using std::min;
 
-struct NodeColor
+namespace BP
 {
-	int r;
-	int g;
-	int b;
-	int a;
+	struct Node;
+	struct Block;
+	typedef float ElementType;
+	typedef std::shared_ptr<Node> NodePtr;
 
-	NodeColor() : NodeColor( 0, 0, 0, 0 )
-	{};
-
-	NodeColor( int _r, int _g, int _b, int _a ) :r( _r ), g( _g ), b( _b ), a( _a )
-	{};
-};
-
-struct Block
-{
-	Block( ElementType _w, ElementType _h, NodeColor _color) :w( _w ), h( _h ), color(_color), fit(nullptr)
-	{};
-
-	~Block()
+	struct NodeColor
 	{
-		fit = nullptr;
+		int r;
+		int g;
+		int b;
+		int a;
+
+		NodeColor() : NodeColor( 0, 0, 0, 0 )
+		{};
+
+		NodeColor( int _r, int _g, int _b, int _a ) :r( _r ), g( _g ), b( _b ), a( _a )
+		{};
 	};
 
-	ElementType w;
-	ElementType h;
-	NodePtr fit;
-	NodeColor color;
-};
+	struct Block
+	{
+		Block( ElementType _w, ElementType _h, NodeColor _color ) :w( _w ), h( _h ), color( _color ), fit( nullptr )
+		{};
 
-typedef std::vector<Block> BlockVector;
-
-struct BlockSort
-{
-private:
-	using  SortMetaFunc = ElementType(BlockSort::*)(const Block& lhs, const Block& rhs);
-	using  SortFunc = bool(BlockSort::*)(const Block& lhs, const Block& rhs);
-
-	ElementType random( const Block& lhs, const Block& rhs )
-	{
-		return rand() - 0.5f;
-	};
-	ElementType w( const Block& lhs, const Block& rhs )
-	{
-		return lhs.w - rhs.w;
-	};
-	ElementType h( const Block& lhs, const Block& rhs )
-	{
-		return lhs.h - rhs.h;
-	};
-	ElementType a( const Block& lhs, const Block& rhs )
-	{
-		return lhs.w*lhs.h - rhs.w*rhs.h;
-	};
-	ElementType max( const Block& lhs, const Block& rhs )
-	{
-		return std::max( lhs.w, lhs.h ) - std::max( rhs.w, rhs.h );
-	};
-	ElementType min( const Block& lhs, const Block& rhs )
-	{
-		return std::min( lhs.w, lhs.h ) - std::min( rhs.w, rhs.h );
-	};
-
-	std::map<std::string, SortMetaFunc> metaSortMap = {
-		{ "random", &BlockSort::random},
-		{ "w", &BlockSort::w},
-		{ "h", &BlockSort::h},
-		{ "a", &BlockSort::a},
-		{ "max", &BlockSort::max},
-		{ "min", &BlockSort::min}
-	};
-
-
-	bool width( const Block& lhs, const Block& rhs )
-	{
-		return msort( lhs, rhs, { "w", "h"} );
-	};
-
-	bool height ( const Block& lhs, const Block& rhs )
-	{
-		return msort( lhs, rhs, { "h", "w" } );
-	};
-
-	bool area ( const Block& lhs, const Block& rhs )
-	{
-		return msort( lhs, rhs, { "a", "h", "w" } );
-	};
-
-	bool maxside( const Block& lhs, const Block& rhs )
-	{
-		return msort( lhs, rhs, { "max", "min", "h", "w" } );
-	};
-	std::map<std::string, SortFunc> sortMap = {
-		{ "width", &BlockSort::width },
-		{ "height", &BlockSort::height },
-		{ "area", &BlockSort::area },
-		{ "maxside", &BlockSort::maxside },
-	};
-
-	bool msort( const Block& lhs, const Block& rhs, std::vector <std::string> criteria)
-	{
-		ElementType diff;
-		for( auto i = 0; i < criteria.size(); ++i )
+		~Block()
 		{
-			SortMetaFunc func =  metaSortMap.at( criteria[i] );
-			diff = (this->*func)(lhs, rhs);
-			if( diff != 0 )
+			fit = nullptr;
+		};
+
+		ElementType w;
+		ElementType h;
+		NodePtr fit;
+		NodeColor color;
+	};
+
+	typedef std::vector<Block> BlockVector;
+
+	struct BlockSort
+	{
+	private:
+		using  SortMetaFunc = ElementType( BlockSort::* )(const Block& lhs, const Block& rhs);
+		using  SortFunc = bool(BlockSort::*)(const Block& lhs, const Block& rhs);
+
+		ElementType _random( const Block& lhs, const Block& rhs )
+		{
+			return rand() - 0.5f;
+		};
+		ElementType w( const Block& lhs, const Block& rhs )
+		{
+			return lhs.w - rhs.w;
+		};
+		ElementType h( const Block& lhs, const Block& rhs )
+		{
+			return lhs.h - rhs.h;
+		};
+		ElementType a( const Block& lhs, const Block& rhs )
+		{
+			return lhs.w*lhs.h - rhs.w*rhs.h;
+		};
+
+		ElementType _max( const Block& lhs, const Block& rhs )
+		{
+			return max( lhs.w, lhs.h ) - max( rhs.w, rhs.h );
+		};
+
+		ElementType _min( const Block& lhs, const Block& rhs )
+		{
+			return min( lhs.w, lhs.h ) - min( rhs.w, rhs.h );
+		};
+
+		std::map<std::string, SortMetaFunc> metaSortMap = {
+			{ "random", &BlockSort::_random},
+			{ "w", &BlockSort::w},
+			{ "h", &BlockSort::h},
+			{ "a", &BlockSort::a},
+			{ "max", &BlockSort::_max},
+			{ "min", &BlockSort::_min}
+		};
+
+
+		bool width( const Block& lhs, const Block& rhs )
+		{
+			return msort( lhs, rhs, { "w", "h" } );
+		};
+
+		bool height( const Block& lhs, const Block& rhs )
+		{
+			return msort( lhs, rhs, { "h", "w" } );
+		};
+
+		bool area( const Block& lhs, const Block& rhs )
+		{
+			return msort( lhs, rhs, { "a", "h", "w" } );
+		};
+
+		bool maxside( const Block& lhs, const Block& rhs )
+		{
+			return msort( lhs, rhs, { "max", "min", "h", "w" } );
+		};
+		std::map<std::string, SortFunc> sortMap = {
+			{ "width", &BlockSort::width },
+			{ "height", &BlockSort::height },
+			{ "area", &BlockSort::area },
+			{ "maxside", &BlockSort::maxside },
+		};
+
+		bool msort( const Block& lhs, const Block& rhs, std::vector <std::string> criteria )
+		{
+			ElementType diff;
+			for( auto i = 0; i < criteria.size(); ++i )
 			{
-				return diff > 0 ? true : false;
+				SortMetaFunc func = metaSortMap.at( criteria[i] );
+				diff = (this->*func)(lhs, rhs);
+				if( diff != 0 )
+				{
+					return diff > 0 ? true : false;
+				}
 			}
+			return false;
 		}
-		return false;
-	}
-public:
-	SortFunc SortComp( const std::string& sortName )
-	{
-		return sortMap.at( sortName );
-	};
-};
-
-struct Rect
-{
-	ElementType x;
-	ElementType y;
-	ElementType w;
-	ElementType h;
-
-	Rect( ElementType _x, ElementType _y, ElementType _w, ElementType _h ) 
-		:x( _x ), y( _y ), w( _w ), h( _h )
-	{};
-
-	Rect() :x( 0 ), y( 0 ), w( 0 ), h( 0 )
-	{
-	};
-};
-
-struct Node : public Rect
-{
-	Node()
-		:Rect( 0, 0, 0, 0 ), used( false ), down( nullptr ), right( nullptr )
-	{};
-
-	Node( ElementType _x, ElementType _y, ElementType _w, ElementType _h )
-		:Rect( _x, _y, _w, _h ), used( false ), down( nullptr ), right( nullptr )
-	{};
-
-	~Node()
-	{
-		down = nullptr;
-		right = nullptr;
+	public:
+		SortFunc SortComp( const std::string& sortName )
+		{
+			return sortMap.at( sortName );
+		};
 	};
 
-	Node( const Node& other )
+	struct Rect
 	{
-		x = other.x;
-		y = other.y;
-		w = other.w;
-		h = other.h;
-		used = other.used;
-		down = other.down;
-		right = other.right;
+		ElementType x;
+		ElementType y;
+		ElementType w;
+		ElementType h;
+
+		Rect( ElementType _x, ElementType _y, ElementType _w, ElementType _h )
+			:x( _x ), y( _y ), w( _w ), h( _h )
+		{};
+
+		Rect() :x( 0 ), y( 0 ), w( 0 ), h( 0 )
+		{};
 	};
 
-	bool used;
-	NodePtr down;
-	NodePtr right;
-};
-
-/*(0,0)  _______________x
-		|       |h
-		|_______|
-		|    w
-		|
-		y*/
-
-class Packer
-{
-public:
-	Packer():Packer( 0, 0 )
+	struct Node : public Rect
 	{
+		Node()
+			:Rect( 0, 0, 0, 0 ), used( false ), down( nullptr ), right( nullptr )
+		{};
+
+		Node( ElementType _x, ElementType _y, ElementType _w, ElementType _h )
+			:Rect( _x, _y, _w, _h ), used( false ), down( nullptr ), right( nullptr )
+		{};
+
+		~Node()
+		{
+			down = nullptr;
+			right = nullptr;
+		};
+
+		Node( const Node& other )
+		{
+			x = other.x;
+			y = other.y;
+			w = other.w;
+			h = other.h;
+			used = other.used;
+			down = other.down;
+			right = other.right;
+		};
+
+		bool used;
+		NodePtr down;
+		NodePtr right;
 	};
 
-	Packer(ElementType w, ElementType h);
-	
-	~Packer();
+	/*(0,0)  _______________x
+			|       |h
+			|_______|
+			|    w
+			|
+			y*/
 
-	void fit( BlockVector& blockVector );
-
-	NodePtr findNode( NodePtr node, ElementType w, ElementType h );
-
-	NodePtr splitNode( NodePtr node, ElementType w, ElementType h );
-
-	NodePtr growNode( ElementType w, ElementType h );
-
-	NodePtr growDown( ElementType w, ElementType h );
-
-	NodePtr growRight( ElementType w, ElementType h );
-
-	NodePtr getRoot()
+	class Packer
 	{
-		return root;
+	public:
+		Packer() :Packer( 0, 0 )
+		{};
+
+		Packer( ElementType w, ElementType h );
+
+		~Packer();
+
+		void fit( BlockVector& blockVector );
+
+		NodePtr findNode( NodePtr node, ElementType w, ElementType h );
+
+		NodePtr splitNode( NodePtr node, ElementType w, ElementType h );
+
+		NodePtr growNode( ElementType w, ElementType h );
+
+		NodePtr growDown( ElementType w, ElementType h );
+
+		NodePtr growRight( ElementType w, ElementType h );
+
+		NodePtr getRoot()
+		{
+			return root;
+		};
+
+		void reset();
+
+	private:
+		NodePtr root;
+
 	};
-
-	void reset();
-
-private:
-	NodePtr root;
-
-};
+}

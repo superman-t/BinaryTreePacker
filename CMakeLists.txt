@@ -38,9 +38,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 if (MSVC)
     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT BinaryTreePacker)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 -EHsc -D_USE_MATH_DEFINES")
-	add_custom_command(TARGET BinaryTreePacker POST_BUILD			# Adds a post-build event to MyTest
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different					# which executes "cmake - E copy_if_different..."
-        "${PROJECT_BINARY_DIR}/external/nanogui/$<CONFIGURATION>/nanogui.dll"      # <--this is in-file
+    add_custom_command(TARGET BinaryTreePacker POST_BUILD			                # Adds a post-build event
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different					                # which executes "cmake - E copy_if_different..."
+        "${PROJECT_BINARY_DIR}/external/nanogui/$<CONFIGURATION>/nanogui.dll"       # <--this is in-file
         $<TARGET_FILE_DIR:BinaryTreePacker>)										# <--this is out-file path
 else()
     set(CMAKE_CXX_COMPILER      "clang++" )         # 显示指定使用的C++编译器

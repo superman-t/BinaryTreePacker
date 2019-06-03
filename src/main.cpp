@@ -16,6 +16,7 @@ using std::string;
 using std::vector;
 using std::pair;
 using std::to_string;
+using namespace BP;
 
 
 class MyGLCanvas : public nanogui::GLCanvas
@@ -45,8 +46,8 @@ public:
 
 	void generateData( int count)
 	{
-		std::random_device random;
-		std::default_random_engine el( random() );
+		std::random_device lrandom;
+		std::default_random_engine el( lrandom() );
 		std::uniform_int_distribution<int> uniform_dist( 10, 100 );
 
 		mBlockVector.reserve( count );
