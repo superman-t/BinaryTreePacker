@@ -22,9 +22,6 @@ include_directories(${NANOGUI_EXTRA_INCS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external/nanogui/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
 link_directories(${PROJECT_BINARY_DIR}/external/nanogui)
