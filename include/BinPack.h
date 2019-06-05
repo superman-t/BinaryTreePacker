@@ -116,7 +116,7 @@ namespace BP
 			{ "area", &BlockSort::area },
 			{ "maxside", &BlockSort::maxside },
 		};
-
+		//以顺序集合的形势进行排序，按照集合的优先级排序，当遇到相等后继续以集合中指定的顺序排序
 		bool msort( const Block& lhs, const Block& rhs, std::vector <std::string> criteria )
 		{
 			ElementType diff;
