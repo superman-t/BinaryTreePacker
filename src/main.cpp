@@ -208,31 +208,6 @@ public:
 			}
 		} );
 
-		//Button *b0 = new Button( tools, "maxside" );
-		//b0->setCallback( [this]()
-		//{
-		//	/*mCanvas->setBackgroundColor( Vector4i( rand() % 256, rand() % 256, rand() % 256, 255 ) );*/
-		//	mCanvas->refresh("maxside");
-		//} );
-
-		//Button *b1 = new Button( tools, "area" );
-		//b1->setCallback( [this]()
-		//{
-		//	mCanvas->refresh( "area" );
-		//} );
-
-		//Button *b2 = new Button( tools, "width" );
-		//b2->setCallback( [this]()
-		//{
-		//	mCanvas->refresh( "width" );
-		//} );
-
-		//Button *b3 = new Button( tools, "height" );
-		//b3->setCallback( [this]()
-		//{
-		//	mCanvas->refresh( "height" );
-		//} );
-
 		performLayout();
 	}
 
